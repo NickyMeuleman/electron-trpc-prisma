@@ -8,7 +8,9 @@
     "build:main": "tsc -p ./main/tsconfig.json && vite build main",
     "build:preload": "tsc -p ./preload/tsconfig.json && vite build preload",
     "build:renderer": "tsc -p ./renderer/tsconfig.json && vite build renderer",
-    "start": "electron ."
+    "start": "electron .",
+    "dev:web": "ts-node scripts/watchWeb.ts",
+    "dev": "ts-node scripts/watchDesktop.ts"
   },
   "keywords": [],
   "author": "",
