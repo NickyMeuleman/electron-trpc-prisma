@@ -1,22 +1,21 @@
 {
   "compilerOptions": {
-    "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
-    "strict": true,
+    "target": "esnext",
     "sourceMap": false,
-    "esModuleInterop": true,
+    "moduleResolution": "Node",
     "skipLibCheck": true,
+    "strict": true,
+    "esModuleInterop": true,
     "isolatedModules": true,
     "lib": ["esnext"],
     "types": ["node", "vite/client"],
-    "noEmit": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "/@/*": ["./*"]
+    },
+    "resolveJsonModule": true,
+    "noEmit": true
   },
-  "include": ["./**/*.ts", "./**/*.d.ts"],
-  "references": [
-    {
-      "path": "../tsconfig.node.json"
-    }
-  ]
+  "include": ["./**/*.ts", "./**/*.d.ts"]
 }

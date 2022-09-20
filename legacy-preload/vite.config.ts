@@ -1,11 +1,8 @@
-import { chrome } from "../.electron-vendors.cache.json";
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { join } from "path";
 import { builtinModules } from "module";
+import { defineConfig } from "vite";
 
 const PACKAGE_ROOT = __dirname;
-console.log("WEB", { root: PACKAGE_ROOT, env: process.cwd() });
+console.log("PRELOAD", { root: PACKAGE_ROOT, env: process.cwd() });
 
 // https://vitejs.dev/config/
 // import.meta vite specific vars have not been injected yet here.
@@ -13,36 +10,31 @@ console.log("WEB", { root: PACKAGE_ROOT, env: process.cwd() });
 // to override that behaviour: set an env MODE variable and pass a mode: process.env.MODE to the vite config
 // https://vitejs.dev/guide/env-and-mode.html
 export default defineConfig({
-  mode: process.env.MODE,
   root: PACKAGE_ROOT,
   envDir: process.cwd(),
-  resolve: {
-    alias: {
-      "/@/": join(PACKAGE_ROOT, "src") + "/",
-    },
-  },
-  base: "./",
-  server: {
-    fs: {
-      strict: true,
-    },
-  },
   build: {
-    target: `chrome${chrome}`,
+    target: `chrome104`,
     sourcemap: "inline",
-    outDir: "dist",
+    outDir: "../dist/preload",
     emptyOutDir: true,
     assetsDir: ".",
     // set to development in the watch script
     minify: process.env.MODE !== "development",
+    lib: {
+      entry: "index.ts",
+      formats: ["cjs"],
+    },
     rollupOptions: {
-      input: join(PACKAGE_ROOT, "index.html"),
+      output: {
+        entryFileNames: "[name].cjs",
+      },
       external: [
+        // Exclude Electron from build.
+        "electron",
         // Exclude Node builtin modules.
         ...builtinModules.flatMap((p) => [p, `node:${p}`]),
       ],
     },
     reportCompressedSize: false,
   },
-  plugins: [react()],
 });

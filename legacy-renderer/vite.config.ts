@@ -1,4 +1,3 @@
-import { chrome } from "../.electron-vendors.cache.json";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { join } from "path";
@@ -13,14 +12,8 @@ console.log("WEB", { root: PACKAGE_ROOT, env: process.cwd() });
 // to override that behaviour: set an env MODE variable and pass a mode: process.env.MODE to the vite config
 // https://vitejs.dev/guide/env-and-mode.html
 export default defineConfig({
-  mode: process.env.MODE,
   root: PACKAGE_ROOT,
   envDir: process.cwd(),
-  resolve: {
-    alias: {
-      "/@/": join(PACKAGE_ROOT, "src") + "/",
-    },
-  },
   base: "./",
   server: {
     fs: {
@@ -28,9 +21,9 @@ export default defineConfig({
     },
   },
   build: {
-    target: `chrome${chrome}`,
+    target: `chrome104`,
     sourcemap: "inline",
-    outDir: "dist",
+    outDir: "../dist/renderer",
     emptyOutDir: true,
     assetsDir: ".",
     // set to development in the watch script

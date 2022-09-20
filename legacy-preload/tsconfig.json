@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "sourceMap": false,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "lib": ["esnext", "DOM"],
+    "noEmit": true,
+    "baseUrl": ".",
+    "types": ["node"]
+  },
+  "include": ["./**/*.ts", "./**/*.d.ts"],
+  "references": [
+    {
+      "path": "../tsconfig.node.json"
+    }
+  ]
+}

@@ -1,21 +1,16 @@
 {
   "compilerOptions": {
-    "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
-    "strict": true,
+    "target": "esnext",
     "sourceMap": false,
+    "moduleResolution": "Node",
     "skipLibCheck": true,
+    "strict": true,
     "isolatedModules": true,
-    "lib": ["esnext", "DOM"],
-    "noEmit": true,
+    "types": ["node"],
     "baseUrl": ".",
-    "types": ["node"]
+    "resolveJsonModule": true,
+    "noEmit": true
   },
-  "include": ["./**/*.ts", "./**/*.d.ts"],
-  "references": [
-    {
-      "path": "../tsconfig.node.json"
-    }
-  ]
+  "include": ["./**/*.ts", "./**/*.d.ts"]
 }

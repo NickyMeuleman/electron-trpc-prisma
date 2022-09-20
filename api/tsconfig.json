@@ -9,7 +9,8 @@
     "isolatedModules": true,
     "types": ["node"],
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "noEmit": true
   },
   "include": ["**/*.ts"]
 }
