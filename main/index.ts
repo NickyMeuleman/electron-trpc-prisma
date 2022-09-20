@@ -1,6 +1,7 @@
-import { app } from "electron";
+import { app, ipcMain } from "electron";
 import "./security-restrictions";
 import { restoreOrCreateWindow } from "./mainWindow";
+import { createIPCHandler } from "../electron-trpc/createIPCHandler";
 
 console.log("main/index");
 
@@ -55,3 +56,7 @@ app
 //     }))
 //     .catch(e => console.error('Failed install extension:', e));
 // }
+
+app.on("ready", () => {
+  createIPCHandler({ ipcMain });
+});

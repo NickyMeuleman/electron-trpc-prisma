@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "lib": ["ESNext", "DOM"],
+    "strict": true,
+    "noEmit": true
+  },
+  "include": ["src/*.ts", "ipcLink.ts", "exposeTRPC.ts", "createIPCHandler.ts"],
+  "exclude": ["node_modules"]
+}
