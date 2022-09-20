@@ -16,11 +16,12 @@ declare var global: CustomGlobalThis;
 //  they are also available here, but TypeScript doesn't know that
 console.log("test", path.join(__dirname, "../../prisma/db.sqlite"));
 
-const dbPath =
-  process.env.NODE_ENV === "development"
-    ? path.join(__dirname, "../../prisma/db.sqlite")
-    : // @ts-ignore
-      path.join(process.resourcesPath, "/db.sqlite");
+const dbPath = path.join(__dirname, "../../prisma/db.sqlite");
+// const dbPath =
+//   process.env.NODE_ENV === "development"
+//     ? path.join(__dirname, "../../prisma/db.sqlite")
+//     : // @ts-ignore
+//       path.join(process.resourcesPath, "/db.sqlite");
 console.log(dbPath);
 
 // TODO: investigate why NODE_ENV is not being set to 'production' during compile
