@@ -5,13 +5,15 @@
   "private": true,
   "main": "main/dist/index.cjs",
   "scripts": {
+    "watch:web": "ts-node scripts/watchWeb.ts",
+    "watch:desktop": "ts-node scripts/watchDesktop.ts",
     "build": "npm run build:main & npm run build:preload & npm run build:renderer",
     "build:main": "cd ./main && tsc && vite build",
     "build:preload": "cd ./preload && tsc && vite build",
     "build:renderer": "cd ./renderer && tsc && vite build",
     "start": "electron .",
     "dev": "cross-env NODE_ENV=development node scripts/watch.mjs",
-    "postinstall": "cross-env ELECTRON_RUN_AS_NODE=1 electron scripts/update-electron-vendors.mjs && cd ./packages/prisma && prisma generate"
+    "postinstall": "cross-env ELECTRON_RUN_AS_NODE=1 electron scripts/update-electron-vendors.mjs && cd ./prisma && prisma generate"
   },
   "keywords": [],
   "author": "",
