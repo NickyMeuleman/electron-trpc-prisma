@@ -32,10 +32,7 @@
   }
 }
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.example:hover {
+  cursor: pointer;
+  color: #f87171;
 }

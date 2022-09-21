@@ -3,8 +3,19 @@ import { trpc } from "./utils/trpc";
 import reactLogo from "./assets/react.svg";
 
 function Home() {
-  const hello = trpc.greeting.useQuery({ name: "Nicky" });
-  if (!hello.data) return <div>Loading...</div>;
+  const examples = trpc.example.getAll.useQuery();
+  const utils = trpc.useContext();
+  const addExample = trpc.example.add.useMutation({
+    onSuccess() {
+      utils.example.getAll.invalidate();
+    },
+  });
+  const removeExample = trpc.example.remove.useMutation({
+    onSuccess() {
+      utils.example.getAll.invalidate();
+    },
+  });
+  const greeting = trpc.greeting.useQuery({ name: "Nicky" });
 
   return (
     <div className="App">
@@ -16,8 +27,23 @@ function Home() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <p>From tRPC:</p>
-      <p>{hello.data}</p>
+      <p>{greeting.data}</p>
+      <button onClick={() => addExample.mutate()}>ADD example</button>
+      <ul>
+        {examples.data?.map((example, idx) => {
+          return (
+            <li
+              key={idx}
+              className="example"
+              onClick={() => {
+                removeExample.mutate({ id: example.id });
+              }}
+            >
+              <span>{example.id}</span>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }

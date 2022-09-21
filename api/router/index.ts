@@ -1,14 +1,13 @@
 import { z } from "zod";
 import { t } from "../context";
+import { exampleRouter } from "./example";
 
 export const appRouter = t.router({
+  example: exampleRouter,
   greeting: t.procedure
     .input(z.object({ name: z.string() }))
-    .query(async ({ input, ctx }) => {
-      const count = await ctx.prisma.example.count();
-      return `hello tRPC v10, ${input.name ?? "world"}! I say ${
-        ctx.tomato
-      }. Example count: ${count}`;
+    .query(async ({ input }) => {
+      return `hello tRPC v10, ${input.name ?? "world"}!`;
     }),
 });
 

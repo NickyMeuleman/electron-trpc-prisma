@@ -4,3 +4,4 @@ generated
 dist
 .browserslistrc
 .electron-vendors.cache.json
+db.sqlite

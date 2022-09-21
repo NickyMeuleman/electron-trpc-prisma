@@ -14,15 +14,13 @@ declare var global: CustomGlobalThis;
 // https://www.electronjs.org/docs/latest/api/process
 // specific electron things on process are typed in the main/preload process but not here,
 //  they are also available here, but TypeScript doesn't know that
-console.log("test", path.join(__dirname, "../../prisma/db.sqlite"));
 
-const dbPath = path.join(__dirname, "../../prisma/db.sqlite");
-// const dbPath =
-//   process.env.NODE_ENV === "development"
-//     ? path.join(__dirname, "../../prisma/db.sqlite")
-//     : // @ts-ignore
-//       path.join(process.resourcesPath, "/db.sqlite");
-console.log(dbPath);
+const dbPath =
+  process.env.NODE_ENV === "development"
+    ? path.join(__dirname, "../../buildResources/db.sqlite")
+    : // @ts-ignore
+      path.join(process.resourcesPath, "buildResources/db.sqlite");
+console.log({dbPath});
 
 // TODO: investigate why NODE_ENV is not being set to 'production' during compile
 export const prisma =
