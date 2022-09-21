@@ -5,6 +5,7 @@
   "private": true,
   "main": "main/dist/index.cjs",
   "scripts": {
+    "prettier": "prettier -c .",
     "bootstrap": "npm install && npm run db:push",
     "dev": "cross-env NODE_ENV=development npm run watch:desktop",
     "build": "npm run build:main & npm run build:preload & npm run build:renderer",
@@ -30,6 +31,7 @@
     "cross-env": "^7.0.3",
     "electron": "^20.1.4",
     "electron-builder": "23.3.3",
+    "prettier": "2.7.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.3",
     "vite": "^3.1.3"

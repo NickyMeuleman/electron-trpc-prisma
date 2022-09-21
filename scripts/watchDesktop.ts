@@ -68,13 +68,9 @@ function createMainWatcher() {
           /** Spawn new electron process */
           // I read the docs for spawn.options.stio and still don't know how it works
           // https://nodejs.org/api/child_process.html#optionsstdio
-          electronProcess = spawn(
-            String(electronPath),
-            ["."],
-            {
-              stdio: "inherit",
-            }
-          );
+          electronProcess = spawn(String(electronPath), ["."], {
+            stdio: "inherit",
+          });
 
           /** Stops the watch script when the application has been quit */
           electronProcess.addListener("exit", process.exit);
