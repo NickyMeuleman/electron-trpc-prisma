@@ -21,3 +21,7 @@ Change the `--windows` flag to the wanted OS.
 Leaving off the `--dir` flag means it compiles an installable executable.
 
 [`electron-builder` CLI docs](https://www.electron.build/cli)
+
+## Notes
+
+The `resolve.alias` stuff in `vite.config.ts` files is needed because https://github.com/vitejs/vite/issues/6828

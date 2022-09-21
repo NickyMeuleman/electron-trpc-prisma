@@ -17,5 +17,6 @@
     "resolveJsonModule": true,
     "noEmit": true
   },
-  "include": ["./**/*.ts", "./**/*.d.ts"]
+  "include": ["./**/*.ts", "./**/*.d.ts"],
+  "references": [{ "path": "../tsconfig.node.json" }]
 }
