@@ -3,7 +3,7 @@ import "./App.css";
 import { trpc } from "./utils/trpc";
 import Home from "./Home";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { TRPCClientError } from "@trpc/client";
+import { Operation, TRPCClientError, TRPCClientRuntime } from "@trpc/client";
 import type { TRPCLink } from "@trpc/client";
 import { observable } from "@trpc/server/observable";
 import { AnyRouter, inferRouterError } from "@trpc/server";
@@ -17,7 +17,7 @@ export function transformResult<TRouter extends AnyRouter, TOutput>(
   response:
     | TRPCResponseMessage<TOutput, inferRouterError<TRouter>>
     | TRPCResponse<TOutput, inferRouterError<TRouter>>,
-  runtime: any
+  runtime: TRPCClientRuntime
 ) {
   if ("error" in response) {
     const error = runtime.transformer.deserialize(
@@ -42,33 +42,40 @@ export function transformResult<TRouter extends AnyRouter, TOutput>(
   return { ok: true, result } as const;
 }
 
-export function ipcLink<TRouter extends AnyRouter>(
-  opts?: any
-): TRPCLink<TRouter> {
+interface IPCResult {
+  response: TRPCResponse;
+}
+
+// export type HTTPRequestOptions = ResolvedHTTPLinkOptions &
+//   GetInputOptions & {
+//     type: ProcedureType;
+//     path: string;
+//   };
+
+export type IPCRequestOptions = Operation;
+
+export function ipcLink<TRouter extends AnyRouter>(): TRPCLink<TRouter> {
   return (runtime) =>
     ({ op }) => {
       return observable((observer) => {
-        const promise = (window as any).electronTRPC.rpc(op);
+        const promise: Promise<IPCResult> = (window as any).electronTRPC.rpc(
+          op
+        );
 
         promise
-          .then((res: any) => {
-            const transformed = transformResult(res, runtime);
+          .then((res) => {
+            const transformed = transformResult(res.response, runtime);
 
             if (!transformed.ok) {
-              observer.error(
-                TRPCClientError.from(transformed.error, {
-                  meta: res.meta,
-                })
-              );
+              observer.error(TRPCClientError.from(transformed.error));
               return;
             }
             observer.next({
-              context: res.meta,
               result: transformed.result,
             });
             observer.complete();
           })
-          .catch((cause: any) => observer.error(TRPCClientError.from(cause)));
+          .catch((cause: Error) => observer.error(TRPCClientError.from(cause)));
 
         return () => {
           // cancel promise here

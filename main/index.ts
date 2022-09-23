@@ -14,9 +14,11 @@ import type {
   TRPCResponseMessage,
   TRPCErrorResponse,
   TRPCResultResponse,
+  TRPCSuccessResponse,
 } from "@trpc/server/rpc";
 import { createContext } from "../api/context";
 import { appRouter } from "../api/router";
+import { Operation } from "@trpc/client";
 
 /**
  * Prevent electron from running multiple instances.
@@ -160,35 +162,31 @@ export function getTRPCErrorFromUnknown(cause: unknown): TRPCError {
 
   return trpcError;
 }
+export type IPCRequestOptions = Operation;
 
 export function createIPCHandler({ ipcMain }: { ipcMain: IpcMain }) {
-  ipcMain.handle("electron-trpc", (_event: unknown, opts: TRPCHandlerArgs) => {
-    const { input, path, type } = opts;
-
-    return resolveIPCResponse({
-      input,
-      path,
-      type,
-    });
-  });
+  ipcMain.handle(
+    "electron-trpc",
+    (_event: Electron.IpcMainInvokeEvent, opts: IPCRequestOptions) => {
+      return resolveIPCResponse(opts);
+    }
+  );
 }
 
-async function resolveIPCResponse<TRouter extends AnyRouter>({
-  type,
-  input,
-  path,
-}: {
-  input?: unknown;
-  type: ProcedureType;
-  path: string;
-}): Promise<TRPCResponse> {
-  type TRouterResponse =
-    | TRPCErrorResponse<inferRouterError<TRouter>>
-    | TRPCResultResponse<unknown>;
+interface IPCResult {
+  response: TRPCResponse;
+}
+
+async function resolveIPCResponse<TRouter extends AnyRouter>(
+  opts: IPCRequestOptions
+): Promise<IPCResult> {
+  const { type, input, path, id } = opts;
+
+  type TRouterError = inferRouterError<TRouter>;
+  type TRouterResponse = TRPCResponse<unknown, TRouterError>;
 
   let ctx: inferRouterContext<TRouter> | undefined = undefined;
 
-  let json: TRouterResponse;
   try {
     if (type === "subscription") {
       throw new TRPCError({
@@ -197,62 +195,150 @@ async function resolveIPCResponse<TRouter extends AnyRouter>({
       });
     }
 
-    ctx = await createContext?.();
+    ctx = await createContext();
 
-    const deserializedInput =
-      typeof input !== "undefined"
-        ? appRouter._def.transformer.input.deserialize(input)
-        : input;
-    //! tracked the transformer issue down to deserialize(input) returning undefined if superjson is used
-    // input doesn't arrive as serialized since it doesn't have the shape superjson serialized to (an object with json and meta fields)
-    // apparently superjson transformer isn't needed here because Set and Date work without it somehow
-    // later me: I forgot I wasn't doing web and the input doesn't go over HTTP, maybe the stuff I use superjson for on the web isn't needed here
+    const deserializeInputValue = (rawValue: unknown) => {
+      return typeof rawValue !== "undefined"
+        ? appRouter._def.transformer.input.deserialize(rawValue)
+        : rawValue;
+    };
 
-    const output = await callProcedure({
-      ctx,
-      path,
-      type,
-      rawInput: input,
-      input: deserializedInput,
-      procedures: appRouter._def.procedures,
+    const rawResults = await Promise.all(
+      [path].map(async (path) => {
+        try {
+          const output = await callProcedure({
+            procedures: appRouter._def.procedures,
+            path,
+            rawInput: input,
+            ctx,
+            type,
+          });
+          return {
+            input,
+            path,
+            data: output,
+          };
+        } catch (cause) {
+          const error = getTRPCErrorFromUnknown(cause);
+
+          return {
+            input,
+            path,
+            error,
+          };
+        }
+      })
+    );
+    const errors = rawResults.flatMap((obj) => (obj.error ? [obj.error] : []));
+    const resultEnvelopes = rawResults.map((obj): TRouterResponse => {
+      const { path, input } = obj;
+
+      if (obj.error) {
+        return {
+          error: appRouter.getErrorShape({
+            error: obj.error,
+            type,
+            path,
+            input,
+            ctx,
+          }),
+        };
+      } else {
+        return {
+          result: {
+            data: obj.data,
+          },
+        };
+      }
     });
-
-    json = {
-      id: null,
-      result: {
-        type: "data",
-        data: output,
-      },
+    return {
+      response: transformTRPCResponse(appRouter, resultEnvelopes[0]),
     };
   } catch (cause) {
     const error = getTRPCErrorFromUnknown(cause);
-
-    json = {
-      id: null,
-      error: appRouter.getErrorShape({
-        error,
-        type,
-        path,
-        input,
-        ctx,
-      }),
-    };
+    if (error) {
+      return {
+        response: {
+          error: appRouter.getErrorShape({
+            error,
+            type,
+            path,
+            input,
+            ctx,
+          }),
+        },
+      };
+    }
   }
-
-  // json is
-  // {
-  //   id: null,
-  //   result: { type: 'data', data: 'hello tRPC v10, Nicky! I say tomahto' }
-  // }
-  // transformTRPCResponse(appRouter, json) is identical
-  return transformTRPCResponse(appRouter, json) as TRPCResponse;
 }
 
-export interface TRPCHandlerArgs {
-  path: string;
-  type: ProcedureType;
-  input?: unknown;
-}
+// WORKING FALLLLBACK
+// async function resolveIPCResponse<TRouter extends AnyRouter>(
+//   opts: IPCRequestOptions
+// ): Promise<IPCResult> {
+//   const { type, input, path, id } = opts;
+
+//   type TRouterError = inferRouterError<TRouter>;
+//   type TRouterResponse = TRPCResponse<unknown, TRouterError>;
+
+//   let ctx: inferRouterContext<TRouter> | undefined = undefined;
+
+//   let json: TRouterResponse;
+//   try {
+//     if (type === "subscription") {
+//       throw new TRPCError({
+//         message: `Unexpected operation ${type}`,
+//         code: "METHOD_NOT_SUPPORTED",
+//       });
+//     }
+
+//     ctx = await createContext?.();
+
+//     const deserializeInputValue = (rawValue: unknown) => {
+//       return typeof rawValue !== "undefined"
+//         ? appRouter._def.transformer.input.deserialize(rawValue)
+//         : rawValue;
+//     };
+//     //! tracked the transformer issue down to deserialize(input) returning undefined if superjson is used
+//     // input doesn't arrive as serialized since it doesn't have the shape superjson serialized to (an object with json and meta fields)
+//     // apparently superjson transformer isn't needed here because Set and Date work without it somehow
+//     // later me: I forgot I wasn't doing web and the input doesn't go over HTTP, maybe the stuff I use superjson for on the web isn't needed here
+
+//     const output = await callProcedure({
+//       ctx,
+//       path,
+//       type,
+//       rawInput: input,
+//       input: deserializeInputValue(input),
+//       procedures: appRouter._def.procedures,
+//     });
+
+//     json = {
+//       id: null,
+//       result: {
+//         type: "data",
+//         data: output,
+//       },
+//     };
+//   } catch (cause) {
+//     const error = getTRPCErrorFromUnknown(cause);
+
+//     json = {
+//       id: null,
+//       error: appRouter.getErrorShape({
+//         error,
+//         type,
+//         path,
+//         input,
+//         ctx,
+//       }),
+//     };
+//   }
+
+//   return {
+//     response: transformTRPCResponse(appRouter, json),
+//   };
+// }
 
 app.on("ready", () => {
   createIPCHandler({ ipcMain });
