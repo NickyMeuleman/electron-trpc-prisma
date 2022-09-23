@@ -4,7 +4,7 @@ import type { ViteDevServer } from "vite";
 import { spawn } from "child_process";
 import type { ChildProcess } from "child_process";
 // TODO: figure out how to import a ts file when using modules for top-level await
-import { listeningWebServer } from "./watchWeb";
+import { listeningWebServer } from "./watchWeb.js";
 
 // process.env.MODE is used in various vite config files
 const mode = (process.env.MODE = process.env.MODE || "development");
