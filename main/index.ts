@@ -21,7 +21,12 @@ if (!isSingleInstance) {
   app.quit();
   process.exit(0);
 }
-app.on("second-instance", restoreOrCreateWindow);
+app.on("second-instance", () => {
+  // calling restoreOrCreateWindow errors with `Unsafe call of an `any` typed value`
+  restoreOrCreateWindow().catch((err) => {
+    throw err;
+  });
+});
 
 /**
  * Disable Hardware Acceleration to save more system resources.
@@ -40,14 +45,24 @@ app.on("window-all-closed", () => {
 /**
  * @see https://www.electronjs.org/docs/latest/api/app#event-activate-macos Event: 'activate'.
  */
-app.on("activate", restoreOrCreateWindow);
+app.on("activate", () => {
+  // calling restoreOrCreateWindow errors with `Unsafe call of an `any` typed value`
+  restoreOrCreateWindow().catch((err) => {
+    throw err;
+  });
+});
 
 /**
  * Create the application window when the background process is ready.
  */
 app
   .whenReady()
-  .then(restoreOrCreateWindow)
+  .then(async () => {
+    // Unsafe call of an `any` typed value.eslint@typescript-eslint/no-unsafe-call)
+    await restoreOrCreateWindow().catch((err) => {
+      throw err;
+    });
+  })
   .catch((e) => console.error("Failed create window:", e));
 
 /**
