@@ -9,6 +9,9 @@ import { listeningWebServer } from "./watchWeb.js";
 // process.env.MODE is used in various vite config files
 const mode = (process.env.MODE = process.env.MODE || "development");
 
+const exitProcess = () => {
+  process.exit(0)
+}
 /**
  * Setup watcher for `desktop/preload`
  * On file changes: reload the web page
@@ -60,7 +63,7 @@ function createMainWatcher() {
         writeBundle() {
           /** Kill electron if process already exist */
           if (electronProcess !== null) {
-            electronProcess.removeListener("exit", process.exit);
+            electronProcess.removeListener("exit", exitProcess);
             electronProcess.kill("SIGINT");
             electronProcess = null;
           }
@@ -73,7 +76,7 @@ function createMainWatcher() {
           });
 
           /** Stops the watch script when the application has been quit */
-          electronProcess.addListener("exit", process.exit);
+          electronProcess.addListener("exit", exitProcess);
         },
       },
     ],
