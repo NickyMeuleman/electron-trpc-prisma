@@ -6,13 +6,13 @@ function Home() {
   const examples = trpc.example.getAll.useQuery();
   const utils = trpc.useContext();
   const addExample = trpc.example.add.useMutation({
-    onSuccess() {
-      utils.example.getAll.invalidate();
+    async onSuccess() {
+      await utils.example.getAll.invalidate();
     },
   });
   const removeExample = trpc.example.remove.useMutation({
-    onSuccess() {
-      utils.example.getAll.invalidate();
+    async onSuccess() {
+      await utils.example.getAll.invalidate();
     },
   });
   const greeting = trpc.greeting.useQuery({ name: "Nicky" });
