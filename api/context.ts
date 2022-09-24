@@ -1,11 +1,10 @@
 import * as trpc from "@trpc/server";
 import { prisma } from "./db/client";
 
-export const createContext = async (opts?: any) => {
-  return {
-    tomato: "tomahto",
+export const createContext = async () => {
+  return Promise.resolve({
     prisma,
-  };
+  });
 };
 
 export type Context = trpc.inferAsyncReturnType<typeof createContext>;
