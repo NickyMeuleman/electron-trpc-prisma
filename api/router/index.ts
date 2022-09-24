@@ -6,7 +6,7 @@ export const appRouter = t.router({
   example: exampleRouter,
   greeting: t.procedure
     .input(z.object({ name: z.string() }))
-    .query(async ({ input }) => {
+    .query(({ input }) => {
       return `hello tRPC v10, ${input.name ?? "world"}!`;
     }),
 });
