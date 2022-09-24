@@ -13,15 +13,20 @@ import {
   TRPCResultMessage,
 } from "@trpc/server/rpc";
 
-export function transformResult<TRouter extends AnyRouter, TOutput>(
+// from @trpc/client/src/links/internals/transformResult
+// FIXME:
+// - the generics here are probably unnecessary
+// - the RPC-spec could probably be simplified to combine HTTP + WS
+/** @internal */
+function transformResult<TRouter extends AnyRouter, TOutput>(
   response:
     | TRPCResponseMessage<TOutput, inferRouterError<TRouter>>
     | TRPCResponse<TOutput, inferRouterError<TRouter>>,
-  runtime: TRPCClientRuntime
+  runtime: TRPCClientRuntime,
 ) {
-  if ("error" in response) {
+  if ('error' in response) {
     const error = runtime.transformer.deserialize(
-      response.error
+      response.error,
     ) as inferRouterError<TRouter>;
     return {
       ok: false,
@@ -34,15 +39,15 @@ export function transformResult<TRouter extends AnyRouter, TOutput>(
 
   const result = {
     ...response.result,
-    ...((!response.result.type || response.result.type === "data") && {
-      type: "data",
+    ...((!response.result.type || response.result.type === 'data') && {
+      type: 'data',
       data: runtime.transformer.deserialize(response.result.data),
     }),
-  } as TRPCResultMessage<TOutput>["result"];
+  } as TRPCResultMessage<TOutput>['result'];
   return { ok: true, result } as const;
 }
 
-interface IPCResult {
+interface IPCResponse {
   response: TRPCResponse;
 }
 
@@ -51,14 +56,13 @@ interface IPCResult {
 //     type: ProcedureType;
 //     path: string;
 //   };
-
 export type IPCRequestOptions = Operation;
 
 export function ipcLink<TRouter extends AnyRouter>(): TRPCLink<TRouter> {
   return (runtime) =>
     ({ op }) => {
       return observable((observer) => {
-        const promise: Promise<IPCResult> = (window as any).electronTRPC.rpc(
+        const promise: Promise<IPCResponse> = (window as any).electronTRPC.rpc(
           op
         );
 
