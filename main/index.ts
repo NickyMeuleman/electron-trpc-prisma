@@ -168,8 +168,14 @@ interface IPCResponse {
 async function resolveIPCResponse<TRouter extends AnyRouter>(
   opts: IPCRequestOptions
 ): Promise<IPCResponse> {
-  const { path, type, input: serializedInput } = opts;
-  const { transformer, procedures } = appRouter._def;
+  const { type, input: serializedInput } = opts;
+  const { transformer } = appRouter._def;
+  const deserializedInput = transformer.input.deserialize(serializedInput);
+
+  type TRouterError = inferRouterError<TRouter>;
+  type TRouterResponse = TRPCResponse<unknown, TRouterError>;
+
+  const ctx = await createContext();
 
   if (type === "subscription") {
     throw new TRPCError({
@@ -178,13 +184,16 @@ async function resolveIPCResponse<TRouter extends AnyRouter>(
     });
   }
 
-  async function getRawResult({
-    procedures,
-    path,
-    deserializedInput,
-    ctx,
-    type,
-  }) {
+  type RawResult =
+    | { input: unknown; path: string; data: unknown }
+    | { input: unknown; path: string; error: TRPCError };
+
+  async function getRawResult(
+    ctx: inferRouterContext<TRouter>
+  ): Promise<RawResult> {
+    const { path, type } = opts;
+    const { procedures } = appRouter._def;
+
     try {
       const output = await callProcedure({
         ctx,
@@ -208,10 +217,10 @@ async function resolveIPCResponse<TRouter extends AnyRouter>(
     }
   }
 
-  function getResultEnvelope(rawResult) {
+  function getResultEnvelope(rawResult: RawResult): TRouterResponse {
     const { path, input } = rawResult;
 
-    if (rawResult.error) {
+    if ("error" in rawResult) {
       return {
         error: appRouter.getErrorShape({
           error: rawResult.error,
@@ -230,7 +239,7 @@ async function resolveIPCResponse<TRouter extends AnyRouter>(
     }
   }
 
-  function getEndResponse(envelope): IPCResponse {
+  function getEndResponse(envelope: TRouterResponse): IPCResponse {
     const transformed = transformTRPCResponseItem(appRouter, envelope);
 
     return {
@@ -239,25 +248,17 @@ async function resolveIPCResponse<TRouter extends AnyRouter>(
   }
 
   try {
-    const ctx = await createContext();
-    const deserializedInput = transformer.input.deserialize(serializedInput);
-    const rawResult = await getRawResult({
-      procedures,
-      path,
-      deserializedInput,
-      ctx,
-      type,
-    });
+    const rawResult = await getRawResult(ctx);
     const resultEnvelope = getResultEnvelope(rawResult);
 
     return getEndResponse(resultEnvelope);
   } catch (cause) {
+    const { input, path } = opts;
     // we get here if
-    // - batching is called when it's not enabled
     // - `createContext()` throws
     // - input deserialization fails
     const error = getTRPCErrorFromUnknown(cause);
-    const resultEnvelope = getResultEnvelope([error]);
+    const resultEnvelope = getResultEnvelope({ input, path, error });
 
     return getEndResponse(resultEnvelope);
   }
