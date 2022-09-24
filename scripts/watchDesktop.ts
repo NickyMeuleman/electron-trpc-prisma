@@ -93,4 +93,4 @@ async function main(webServerPromise: Promise<ViteDevServer>) {
   await createMainWatcher();
 }
 
-main(listeningWebServer);
+await main(listeningWebServer);
