@@ -22,7 +22,6 @@ if (!isSingleInstance) {
   process.exit(0);
 }
 app.on("second-instance", () => {
-  // calling restoreOrCreateWindow errors with `Unsafe call of an `any` typed value`
   restoreOrCreateWindow().catch((err) => {
     throw err;
   });
@@ -46,7 +45,6 @@ app.on("window-all-closed", () => {
  * @see https://www.electronjs.org/docs/latest/api/app#event-activate-macos Event: 'activate'.
  */
 app.on("activate", () => {
-  // calling restoreOrCreateWindow errors with `Unsafe call of an `any` typed value`
   restoreOrCreateWindow().catch((err) => {
     throw err;
   });
@@ -58,7 +56,6 @@ app.on("activate", () => {
 app
   .whenReady()
   .then(async () => {
-    // Unsafe call of an `any` typed value.eslint@typescript-eslint/no-unsafe-call)
     await restoreOrCreateWindow().catch((err) => {
       throw err;
     });
@@ -91,14 +88,15 @@ app
 //     .catch((e) => console.error("Failed check updates:", e));
 // }
 
-// from @trpc/server/src/internals/transformTROCResonse
+// from @trpc/server/src/internals/transformTRPCResonse
 function transformTRPCResponseItem<
   TResponseItem extends TRPCResponse | TRPCResponseMessage
 >(router: AnyRouter, item: TResponseItem): TResponseItem {
+  // explicitly use appRouter instead of router argument: https://github.com/trpc/trpc/issues/2804
   if ("error" in item) {
     return {
       ...item,
-      error: router._def.transformer.output.serialize(item.error),
+      error: appRouter._def.transformer.output.serialize(item.error),
     };
   }
 
@@ -107,7 +105,7 @@ function transformTRPCResponseItem<
       ...item,
       result: {
         ...item.result,
-        data: router._def.transformer.output.serialize(item.result.data),
+        data: appRouter._def.transformer.output.serialize(item.result.data),
       },
     };
   }
