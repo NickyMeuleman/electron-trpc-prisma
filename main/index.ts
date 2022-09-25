@@ -1,7 +1,7 @@
 import { app, ipcMain } from "electron";
 import type { IpcMain } from "electron";
 import "./security-restrictions";
-import { restoreOrCreateWindow } from "/@/mainWindow";
+import { restoreOrCreateWindow } from "./mainWindow";
 import { callProcedure, TRPCError } from "@trpc/server";
 import type {
   AnyRouter,
@@ -11,7 +11,7 @@ import type {
 import type { TRPCResponse, TRPCResponseMessage } from "@trpc/server/rpc";
 import { createContext } from "../api/context";
 import { appRouter } from "../api/router";
-import { Operation } from "@trpc/client";
+import { Operation } from "@trpc/client"; 
 
 /**
  * Prevent electron from running multiple instances.
