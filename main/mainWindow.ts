@@ -6,6 +6,7 @@ async function createWindow() {
   const browserWindow = new BrowserWindow({
     show: false, // Use the 'ready-to-show' event to show the instantiated BrowserWindow.
     webPreferences: {
+      allowRunningInsecureContent: false, // https://www.electronjs.org/docs/latest/tutorial/security#8-do-not-enable-allowrunninginsecurecontent
       nodeIntegration: false,
       contextIsolation: true,
       // prefer exposing a method via contextBridge before turning off the sandbox. https://www.electronjs.org/docs/latest/api/context-bridge
