@@ -1,6 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import path from "path";
-
+// need to import something from "electron" to add electron-specific types to `process`
+import type {} from 'electron';
+// https://www.electronjs.org/docs/latest/api/process
+// importing dbPath from main errors with "cannot access dbPath before initialization" is that temporal-dead-zone?
+// importing dbPath from preload errors with "cannot read undefined on exposeInMainWorld"
 // https://www.prisma.io/docs/guides/performance-and-optimization/connection-management#prevent-hot-reloading-from-creating-new-instances-of-prismaclient
 // add prisma to the global type
 type GlobalThis = typeof globalThis;
@@ -9,18 +13,14 @@ interface CustomGlobalThis extends GlobalThis {
 }
 
 // Prevent multiple instances of Prisma Client in development
+// must use var, not let or const: https://stackoverflow.com/questions/35074713/extending-typescript-global-object-in-node-js/68328575#68328575
+// eslint-disable-next-line no-var
 declare var global: CustomGlobalThis;
-
-// https://www.electronjs.org/docs/latest/api/process
-// specific electron things on process are typed in the main/preload process but not here,
-//  they are also available here, but TypeScript doesn't know that
 
 const dbPath =
   process.env.NODE_ENV === "development"
     ? path.join(__dirname, "../../buildResources/db.sqlite")
-    : // @ts-ignore
-      path.join(process.resourcesPath, "buildResources/db.sqlite");
-console.log({ dbPath });
+    : path.join(process.resourcesPath, "buildResources/db.sqlite");
 
 // TODO: investigate why NODE_ENV is not being set to 'production' during compile
 export const prisma =
