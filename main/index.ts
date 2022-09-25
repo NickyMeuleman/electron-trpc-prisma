@@ -1,7 +1,7 @@
 import { app, ipcMain } from "electron";
 import type { IpcMain } from "electron";
 import "./security-restrictions";
-import { restoreOrCreateWindow } from "./mainWindow";
+import { restoreOrCreateWindow, pageUrl } from "./mainWindow";
 import { callProcedure, TRPCError } from "@trpc/server";
 import type {
   AnyRouter,
@@ -155,10 +155,30 @@ function getTRPCErrorFromUnknown(cause: unknown): TRPCError {
   return trpcError;
 }
 
+function validateSender(frame: Electron.WebFrameMain) {
+  const frameUrlObj = new URL(frame.url);
+  const pageUrlObj = new URL(pageUrl);
+
+  if (
+    import.meta.env.DEV &&
+    import.meta.env.VITE_DEV_SERVER_URL !== undefined
+  ) {
+    // during dev
+    if (frameUrlObj.host === pageUrlObj.host) return true;
+  } else {
+    // during prod and test
+    if (frameUrlObj.protocol === "file:") return true;
+  }
+
+  return false;
+}
+
 export function createIPCHandler({ ipcMain }: { ipcMain: IpcMain }) {
+  // https://www.electronjs.org/docs/latest/tutorial/security#17-validate-the-sender-of-all-ipc-messages
   ipcMain.handle(
     "electron-trpc",
-    (_event: Electron.IpcMainInvokeEvent, opts: IPCRequestOptions) => {
+    (event: Electron.IpcMainInvokeEvent, opts: IPCRequestOptions) => {
+      if (!validateSender(event.senderFrame)) return null;
       return resolveIPCResponse(opts);
     }
   );

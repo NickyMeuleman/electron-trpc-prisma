@@ -1,6 +1,15 @@
 import { app, BrowserWindow } from "electron";
 import { join } from "path";
 import { URL } from "url";
+/**
+ * URL for main window.
+ * Vite dev server for development.
+ * `file://../renderer/index.html` for production and test.
+ */
+export const pageUrl =
+  import.meta.env.DEV && import.meta.env.VITE_DEV_SERVER_URL !== undefined
+    ? import.meta.env.VITE_DEV_SERVER_URL
+    : new URL("../renderer/dist/index.html", "file://" + __dirname).toString();
 
 async function createWindow() {
   const browserWindow = new BrowserWindow({
@@ -35,19 +44,6 @@ async function createWindow() {
       browserWindow?.webContents.openDevTools();
     }
   });
-
-  /**
-   * URL for main window.
-   * Vite dev server for development.
-   * `file://../renderer/index.html` for production and test.
-   */
-  const pageUrl =
-    import.meta.env.DEV && import.meta.env.VITE_DEV_SERVER_URL !== undefined
-      ? import.meta.env.VITE_DEV_SERVER_URL
-      : new URL(
-          "../renderer/dist/index.html",
-          "file://" + __dirname
-        ).toString();
 
   await browserWindow.loadURL(pageUrl);
 
