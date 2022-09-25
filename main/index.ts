@@ -11,7 +11,7 @@ import type {
 import type { TRPCResponse, TRPCResponseMessage } from "@trpc/server/rpc";
 import { createContext } from "../api/context";
 import { appRouter } from "../api/router";
-import { Operation } from "@trpc/client"; 
+import type { IPCRequestOptions, IPCResponse } from "../types";
 
 /**
  * Prevent electron from running multiple instances.
@@ -155,8 +155,6 @@ function getTRPCErrorFromUnknown(cause: unknown): TRPCError {
   return trpcError;
 }
 
-type IPCRequestOptions = Operation;
-
 export function createIPCHandler({ ipcMain }: { ipcMain: IpcMain }) {
   ipcMain.handle(
     "electron-trpc",
@@ -164,10 +162,6 @@ export function createIPCHandler({ ipcMain }: { ipcMain: IpcMain }) {
       return resolveIPCResponse(opts);
     }
   );
-}
-
-interface IPCResponse {
-  response: TRPCResponse;
 }
 
 // includes error handling, type info gets lost at helper function calls
