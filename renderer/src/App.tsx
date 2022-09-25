@@ -12,7 +12,6 @@ import {
   TRPCResponseMessage,
   TRPCResultMessage,
 } from "@trpc/server/rpc";
-import type { IPCResponse } from "../../types";
 
 // from @trpc/client/src/links/internals/transformResult
 // FIXME:
