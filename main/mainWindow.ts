@@ -8,7 +8,9 @@ async function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      sandbox: false, // Sandbox disabled because the demo of preload script depend on the Node.js api
+      // prefer exposing a method via contextBridge before turning off the sandbox. https://www.electronjs.org/docs/latest/api/context-bridge
+      // https://www.electronjs.org/docs/latest/tutorial/context-isolation#security-considerations
+      sandbox: true, // enable when using Node.js api in the preload script like https://github.com/cawa-93/vite-electron-builder/tree/main/packages/preload/src
       webviewTag: false, // The webview tag is not recommended. Consider alternatives like an iframe or Electron's BrowserView. @see https://www.electronjs.org/docs/latest/api/webview-tag#warning
       preload: join(app.getAppPath(), "preload/dist/index.cjs"),
     },
