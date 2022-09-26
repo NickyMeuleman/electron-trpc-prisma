@@ -10,8 +10,8 @@ import { listeningWebServer } from "./watchWeb.js";
 const mode = (process.env.MODE = process.env.MODE || "development");
 
 const exitProcess = () => {
-  process.exit(0)
-}
+  process.exit(0);
+};
 /**
  * Setup watcher for `desktop/preload`
  * On file changes: reload the web page

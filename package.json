@@ -6,7 +6,7 @@
   "main": "main/dist/index.cjs",
   "type": "module",
   "scripts": {
-    "prettier": "prettier -c .",
+    "format": "prettier -w .",
     "lint": "eslint .",
     "bootstrap": "npm install && npm run db:push",
     "dev": "cross-env NODE_ENV=development npm run watch:desktop",

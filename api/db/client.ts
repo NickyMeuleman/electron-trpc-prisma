@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import path from "path";
 // need to import something from "electron" to add electron-specific types to `process`
-import type {} from 'electron';
+import type {} from "electron";
 // https://www.electronjs.org/docs/latest/api/process
 // importing dbPath from main errors with "cannot access dbPath before initialization" is that temporal-dead-zone?
 // importing dbPath from preload errors with "cannot read undefined on exposeInMainWorld"
