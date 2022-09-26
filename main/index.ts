@@ -63,29 +63,24 @@ app
   .catch((e) => console.error("Failed create window:", e));
 
 /**
- * Install Vue.js or any other extension in development mode only.
+ * Install React devtools in dev mode
+ * works, but throws errors so it's commented out until these issues are resolved:
+ * - https://github.com/MarshallOfSound/electron-devtools-installer/issues/220
+ * - https://github.com/electron/electron/issues/32133
  * Note: You must install `electron-devtools-installer` manually
  */
 // if (import.meta.env.DEV) {
-//   app.whenReady()
-//     .then(() => import('electron-devtools-installer'))
-//     .then(({default: installExtension, VUEJS3_DEVTOOLS}) => installExtension(VUEJS3_DEVTOOLS, {
-//       loadExtensionOptions: {
-//         allowFileAccess: true,
-//       },
-//     }))
-//     .catch(e => console.error('Failed install extension:', e));
-// }
-
-/**
- * Check for new version of the application - production mode only.
- */
-// if (import.meta.env.PROD) {
 //   app
 //     .whenReady()
-//     .then(() => import("electron-updater"))
-//     .then(({ autoUpdater }) => autoUpdater.checkForUpdatesAndNotify())
-//     .catch((e) => console.error("Failed check updates:", e));
+//     .then(() => import("electron-devtools-installer"))
+//     .then(async ({ default: installExtension, REACT_DEVELOPER_TOOLS }) => {
+//       await installExtension(REACT_DEVELOPER_TOOLS, {
+//         loadExtensionOptions: {
+//           allowFileAccess: true,
+//         },
+//       });
+//     })
+//     .catch((e) => console.error("Failed install extension:", e));
 // }
 
 // from @trpc/server/src/internals/transformTRPCResonse
