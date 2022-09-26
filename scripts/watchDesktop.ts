@@ -3,7 +3,6 @@ import { build } from "vite";
 import type { ViteDevServer } from "vite";
 import { spawn } from "child_process";
 import type { ChildProcess } from "child_process";
-// TODO: figure out how to import a ts file when using modules for top-level await
 import { listeningWebServer } from "./watchWeb.js";
 
 // process.env.MODE is used in various vite config files
@@ -85,15 +84,9 @@ function createMainWatcher() {
   return watcher;
 }
 
-async function main(webServerPromise: Promise<ViteDevServer>) {
-  const webWatchServer = await webServerPromise;
-  // set up VITE_DEV_SERVER_URL, the URL that's loaded into the electron browser during dev
-  process.env.VITE_DEV_SERVER_URL = webWatchServer.resolvedUrls?.local[0];
-
-  // start preload watcher
-  await createPreloadWatcher(webWatchServer);
-  // start main watcher
-  await createMainWatcher();
-}
-
-await main(listeningWebServer);
+// set up VITE_DEV_SERVER_URL, the URL that's loaded into the electron browser during dev
+process.env.VITE_DEV_SERVER_URL = listeningWebServer.resolvedUrls?.local[0];
+// start preload watcher
+await createPreloadWatcher(listeningWebServer);
+// start main watcher
+await createMainWatcher();

@@ -17,13 +17,8 @@ function createWebWatchServer() {
   return server;
 }
 
-async function main() {
-  // start webserver
-  const server = await createWebWatchServer();
-  await server.listen();
-  server.printUrls();
+// start webserver
+const server = await createWebWatchServer();
+await server.listen();
 
-  return server;
-}
-
-export const listeningWebServer = main();
+export { server as listeningWebServer };
