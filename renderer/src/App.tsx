@@ -41,7 +41,7 @@ function transformResult<TRouter extends AnyRouter, TOutput>(
     ...response.result,
     ...((!response.result.type || response.result.type === "data") && {
       type: "data",
-      data: runtime.transformer.deserialize(response.result.data),
+      data: runtime.transformer.deserialize(response.result.data) as unknown,
     }),
   } as TRPCResultMessage<TOutput>["result"];
   return { ok: true, result } as const;

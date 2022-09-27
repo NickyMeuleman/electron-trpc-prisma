@@ -1,7 +1,7 @@
 import { createServer, createLogger } from "vite";
 
 // process.env.MODE is used in various vite config files
-const mode = (process.env.MODE = process.env.MODE || "development");
+const mode = (process.env.MODE = process.env.MODE ?? "development");
 
 /**
  * Setup server for `web`

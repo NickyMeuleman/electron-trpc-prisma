@@ -6,7 +6,7 @@ import type { ChildProcess } from "child_process";
 import { listeningWebServer } from "./watchWeb.js";
 
 // process.env.MODE is used in various vite config files
-const mode = (process.env.MODE = process.env.MODE || "development");
+const mode = (process.env.MODE = process.env.MODE ?? "development");
 
 const exitProcess = () => {
   process.exit(0);
@@ -83,7 +83,6 @@ function createMainWatcher() {
 
   return watcher;
 }
-
 // set up VITE_DEV_SERVER_URL, the URL that's loaded into the electron browser during dev
 process.env.VITE_DEV_SERVER_URL = listeningWebServer.resolvedUrls?.local[0];
 // start preload watcher

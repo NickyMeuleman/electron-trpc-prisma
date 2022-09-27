@@ -5,6 +5,9 @@
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "lib": ["ESNext"],
+    "noEmit": true,
+    "strict": true,
+    "strictNullChecks": true,
     "resolveJsonModule": true
   },
   "include": [

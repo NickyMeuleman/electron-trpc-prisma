@@ -9,7 +9,7 @@ import type {} from "electron";
 // add prisma to the global type
 type GlobalThis = typeof globalThis;
 interface CustomGlobalThis extends GlobalThis {
-  prisma: PrismaClient;
+  prisma?: PrismaClient;
 }
 
 // Prevent multiple instances of Prisma Client in development
@@ -24,7 +24,7 @@ const dbPath =
 
 // TODO: investigate why NODE_ENV is not being set to 'production' during compile
 export const prisma =
-  global.prisma ||
+  global.prisma ??
   new PrismaClient({
     datasources: {
       db: {

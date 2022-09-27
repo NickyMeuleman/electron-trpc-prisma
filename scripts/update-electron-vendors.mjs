@@ -1,3 +1,4 @@
+/* eslint-env node */
 /**
  * This script should be run in electron context
  * @example

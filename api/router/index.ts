@@ -5,9 +5,9 @@ import { exampleRouter } from "./example";
 export const appRouter = t.router({
   example: exampleRouter,
   greeting: t.procedure
-    .input(z.object({ name: z.string() }))
+    .input(z.object({ name: z.string() }).nullish())
     .query(({ input }) => {
-      return `hello tRPC v10, ${input.name ?? "world"}!`;
+      return `hello tRPC v10, ${input?.name ?? "world"}!`;
     }),
 });
 

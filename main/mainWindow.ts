@@ -38,10 +38,10 @@ async function createWindow() {
    * @see https://github.com/electron/electron/issues/25012 for the afford mentioned issue.
    */
   browserWindow.on("ready-to-show", () => {
-    browserWindow?.show();
+    browserWindow.show();
 
     if (import.meta.env.DEV) {
-      browserWindow?.webContents.openDevTools();
+      browserWindow.webContents.openDevTools();
     }
   });
 

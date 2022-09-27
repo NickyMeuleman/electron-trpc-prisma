@@ -3,6 +3,9 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "noEmit": true,
+    "strict": true,
+    "strictNullChecks": true
   }
 }

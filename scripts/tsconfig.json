@@ -4,7 +4,9 @@
     "target": "ESNext",
     "moduleResolution": "NodeNext",
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strict": true,
+    "strictNullChecks": true
   },
   "ts-node": {
     "esm": true
