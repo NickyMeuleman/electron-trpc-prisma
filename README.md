@@ -17,10 +17,13 @@ The tRPC over IPC code is based on [the electron-trpc package](https://github.co
 `electron-builder` is used to compile this codebase into an executable.
 
 - Run `npm run compile`
-  Change the `--windows` flag to the wanted OS.
-  Leaving off the `--dir` flag means it compiles an installable executable.
 
-[`electron-builder` CLI docs](https://www.electron.build/cli)
+This executes the `scripts/compile.ts` file.
+It uses the `electron-builder` programmatic API.
+
+If you want to compile an installable executable, change `dir` to `false` in the call to `build()`.
+
+[`electron-builder` API docs](https://www.electron.build/api/electron-builder)
 
 ## Notes
 

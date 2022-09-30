@@ -6,12 +6,12 @@
   "main": "main/dist/index.cjs",
   "type": "module",
   "scripts": {
-    "format": "prettier -w .",
-    "lint": "eslint .",
     "bootstrap": "npm install && npm run db:push",
     "dev": "cross-env NODE_ENV=development npm run watch:desktop",
     "build": "npm run build:main & npm run build:preload & npm run build:renderer",
-    "start": "cross-env MODE=production electron .",
+    "compile": "cross-env MODE=production npm run build && cross-env NODE_ENV=production ts-node scripts/compile.ts",
+    "format": "prettier -w .",
+    "lint": "eslint .",
     "watch:web": "ts-node scripts/watchWeb.ts",
     "watch:desktop": "ts-node scripts/watchDesktop.ts",
     "build:main": "cd ./main && tsc && vite build",
@@ -20,7 +20,6 @@
     "db:generate": "cd ./prisma && prisma generate",
     "db:push": "cd ./prisma && prisma db push",
     "vendors:update": "cross-env ELECTRON_RUN_AS_NODE=1 electron scripts/update-electron-vendors.mjs",
-    "compile": "cross-env MODE=production npm run build && cross-env NODE_ENV=production electron-builder build --windows --dir --config .electron-builder.config.cjs",
     "postinstall": "npm run vendors:update && npm run db:generate"
   },
   "keywords": [],

@@ -1,3 +1,5 @@
+import builder from "electron-builder";
+
 if (process.env.VITE_APP_VERSION === undefined) {
   const now = new Date();
   process.env.VITE_APP_VERSION = `${now.getUTCFullYear() - 2000}.${
@@ -5,11 +7,7 @@ if (process.env.VITE_APP_VERSION === undefined) {
   }.${now.getUTCDate()}-${now.getUTCHours() * 60 + now.getUTCMinutes()}`;
 }
 
-/**
- * @type {import('electron-builder').Configuration}
- * @see https://www.electron.build/configuration/configuration
- */
-const config = {
+const config: builder.Configuration = {
   directories: {
     output: "dist",
     buildResources: "buildResources",
@@ -25,4 +23,14 @@ const config = {
   ],
 };
 
-module.exports = config;
+builder
+  .build({
+    config,
+    dir: true,
+  })
+  .then((result) => {
+    console.log(JSON.stringify(result));
+  })
+  .catch((error) => {
+    console.error(error);
+  });
