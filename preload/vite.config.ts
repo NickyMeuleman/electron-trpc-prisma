@@ -3,7 +3,6 @@ import { builtinModules } from "module";
 import { defineConfig } from "vite";
 
 const PACKAGE_ROOT = __dirname;
-console.log("PRELOAD", { root: PACKAGE_ROOT, env: process.cwd() });
 
 // why is this needed? Isn't `chrome` typed as "string" already?
 if (typeof chrome !== "string") {

@@ -5,7 +5,6 @@ import { join } from "path";
 import { builtinModules } from "module";
 
 const PACKAGE_ROOT = __dirname;
-console.log("WEB", { root: PACKAGE_ROOT, env: process.cwd() });
 
 // why is this needed? Isn't `chrome` typed as "string" already?
 if (typeof chrome !== "string") {

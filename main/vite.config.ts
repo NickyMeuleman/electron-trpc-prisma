@@ -5,7 +5,6 @@ import { defineConfig } from "vite";
 import { builtinModules } from "module";
 
 const PACKAGE_ROOT = __dirname;
-console.log("MAIN", { root: PACKAGE_ROOT, env: process.cwd() });
 
 // why is this needed? Isn't `node` typed as "string" already?
 if (typeof node !== "string") {
