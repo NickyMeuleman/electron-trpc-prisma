@@ -22,7 +22,6 @@ const dbPath =
     ? path.join(__dirname, "../../buildResources/db.sqlite")
     : path.join(process.resourcesPath, "buildResources/db.sqlite");
 
-// TODO: investigate why NODE_ENV is not being set to 'production' during compile
 export const prisma =
   global.prisma ??
   new PrismaClient({

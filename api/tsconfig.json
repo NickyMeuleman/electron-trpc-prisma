@@ -13,5 +13,5 @@
     "baseUrl": ".",
     "noEmit": true
   },
-  "include": ["**/*.ts"]
+  "include": ["./**/*.ts", "./**/*.d.ts", "./../types/main-env.d.ts"]
 }
