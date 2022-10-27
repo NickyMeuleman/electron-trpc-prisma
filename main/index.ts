@@ -91,7 +91,9 @@ function transformTRPCResponseItem<
   if ("error" in item) {
     return {
       ...item,
-      error: appRouter._def.transformer.output.serialize(item.error) as unknown,
+      error: appRouter._def._config.transformer.output.serialize(
+        item.error
+      ) as unknown,
     };
   }
 
@@ -100,7 +102,7 @@ function transformTRPCResponseItem<
       ...item,
       result: {
         ...item.result,
-        data: appRouter._def.transformer.output.serialize(
+        data: appRouter._def._config.transformer.output.serialize(
           item.result.data
         ) as unknown,
       },
@@ -186,7 +188,7 @@ async function resolveIPCResponse<TRouter extends AnyRouter>(
   opts: IPCRequestOptions
 ): Promise<IPCResponse> {
   const { type, input: serializedInput } = opts;
-  const { transformer } = appRouter._def;
+  const { transformer } = appRouter._def._config;
   const deserializedInput = transformer.input.deserialize(
     serializedInput
   ) as unknown;
